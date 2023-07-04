@@ -14,7 +14,7 @@ clientAddresses={}
 def handle_clients(client_connection,client_address):
     name = client_connection.recv(1024).decode()
     greeting = "Welcome, " + name + ". You can type 'quit' to leave chatroom."
-    client_connection.recv(bytes(greeting, "utf8"))
+    client_connection.send(bytes(greeting, "utf8"))
     message = name + "has joined the chatroom!"
     broadcast(bytes(message, "utf8"))
     connectedClients[client_connection] = name  # add name of the client to dictionary
