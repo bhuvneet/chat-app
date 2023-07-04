@@ -17,6 +17,17 @@ def handle_clients(client_connection,client_address):
     client_connection.recv(bytes(greeting, "utf8"))
     message = name + "has joined the chatroom!"
     broadcast(bytes(message, "utf8"))
+    connectedClients[client_connection] = name  # add name of the client to dictionary
+    
+    while True:
+        message = client_connection.recv(1024)
+        if message != bytes("quit", "utf8"):
+            broadcast(message, name+ ":")
+        else:
+            client_connection.send(bytes("quit", "utf8"))
+            client_connection.close()
+            del connectedClients[client_connection]
+            broadcast(bytes(name + " has left the chatroom"))
     
 def accept_connection():
     while True:
@@ -26,6 +37,11 @@ def accept_connection():
         clientAddresses[client_connection]=client_address   # store client object and address in dictionary 
         
         Thread(target=handle_clients, args=(client_connection,client_address)).start    # invoke function using thread
+
+# send message to all connected clients
+def broadcast(message, prefix=""):
+    for c in connectedClients:
+        c.send(bytes(prefix, "utf8")+message)
 
 if __name__=="__main__":
     mySocket.listen(10)
