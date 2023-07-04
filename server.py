@@ -7,6 +7,7 @@ mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # establish TCP c
 mySocket.bind((host, port))     # bind host and port
 
 mySocket.listen() # keep listening for connections
+print("server is listening...")
 connection, address = mySocket.accept()
 
 message = "connection successful..."
