@@ -13,22 +13,29 @@ clientAddresses={}
 
 def handle_clients(client_connection,client_address):
     name = client_connection.recv(1024).decode()
-    greeting = "Welcome, " + name + ". You can type 'quit' to leave chatroom."
+    greeting = "Welcome, " + name + ". Press Quit button to leave chatroom."
     client_connection.send(bytes(greeting, "utf8"))
-    message = name + "has joined the chatroom!"
+    message = name + " has joined the chatroom!"
     broadcast(bytes(message, "utf8"))
     connectedClients[client_connection] = name  # add name of the client to dictionary
     
     while True:
-        message = client_connection.recv(1024)
-        if message != bytes("quit", "utf8"):
-            broadcast(message, name+ ":")
-        else:
-            client_connection.send(bytes("quit", "utf8"))
-            client_connection.close()
-            del connectedClients[client_connection]
-            broadcast(bytes(name + " has left the chatroom"))
-    
+        
+        try:
+            message = client_connection.recv(1024)
+            if message and message != bytes("quit", "utf8"):
+                broadcast(message, name+ ":")
+            else:
+                break
+        except ConnectionError:
+            print("No connected clients.. server is closing")
+            break
+        
+    client_connection.send(bytes("quit", "utf8"))
+    client_connection.close()
+    del connectedClients[client_connection]
+    broadcast(bytes(name + " has left the chatroom", "utf8"))
+            
 def accept_connection():
     while True:
         client_connection, client_address = mySocket.accept()
@@ -36,7 +43,7 @@ def accept_connection():
         client_connection.send("Welcome to iChat. Please enter your name".encode('utf8'))
         clientAddresses[client_connection]=client_address   # store client object and address in dictionary 
         
-        Thread(target=handle_clients, args=(client_connection,client_address)).start    # invoke function using thread
+        Thread(target=handle_clients, args=(client_connection,client_address)).start()    # invoke function using thread
 
 # send message to all connected clients
 def broadcast(message, prefix=""):
@@ -45,7 +52,7 @@ def broadcast(message, prefix=""):
 
 if __name__=="__main__":
     mySocket.listen(10)
-    print("server listening to client reqs")
+    print("server started...")
     
     # by using threads, the server can handle multiple clients
     serverThread = Thread(target=accept_connection)
