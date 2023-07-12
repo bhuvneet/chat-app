@@ -10,6 +10,7 @@ mySocket.bind((host, port))     # bind host and port
 # using dictionary to store clients information
 connectedClients={}
 clientAddresses={}
+serverRunning = 1
 
 def handle_clients(client_connection,client_address):
     name = client_connection.recv(1024).decode()
@@ -41,20 +42,35 @@ def handle_clients(client_connection,client_address):
         client_connection.send(bytes("quitting chatroom...", "utf8"))
         client_connection.close()
         print(client_address, " has disconnected!")
+        
+    #check if server needs to be shutdown
+    shutdown_server()
      
 def accept_connection():
     while True:
-        client_connection, client_address = mySocket.accept()
-        print(client_address, " has connected!")
-        client_connection.send("Welcome to iChat. Please enter your name to continue...".encode('utf8'))
-        clientAddresses[client_connection]=client_address   # store client object and address in dictionary 
-        
-        Thread(target=handle_clients, args=(client_connection,client_address)).start()    # invoke function using thread
+        if serverRunning == 0:
+            break
+        try:
+            client_connection, client_address = mySocket.accept()
+            print(client_address, " has connected!")
+            client_connection.send("Welcome to iChat. Please enter your name to continue...".encode('utf8'))
+            clientAddresses[client_connection]=client_address   # store client object and address in dictionary 
+            
+            Thread(target=handle_clients, args=(client_connection,client_address)).start()    # invoke function using thread
+        except socket.error:
+            # catch errors when server is not running or socket errors
+            break
 
 # send message to all connected clients
 def broadcast(message, prefix=""):
     for c in connectedClients:
         c.send(bytes(prefix, "utf8")+message)
+
+def shutdown_server():
+    if len(connectedClients) == 0:
+        print("No active clients. Shutting down the server.")
+        mySocket.close()
+        serverRunning = 0
 
 if __name__=="__main__":
     mySocket.listen(10)
