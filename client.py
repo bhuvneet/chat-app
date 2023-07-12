@@ -9,7 +9,7 @@ def receive():
         try:
             message = mySocket.recv(1024).decode("utf8")
             message_list.insert(tkinter.END,message)
-            if message == "quit":
+            if message == "quitting chatroom...":
                 shutdown_app()
         except ConnectionError:
             break    # add errno to display msg
@@ -64,6 +64,8 @@ mySocket.connect((host, port))     # bind host and port
 
 rcv_thread = Thread(target=receive)
 rcv_thread.start()
+
+greetingMsg = 0
 
 #responsible for all kinds of events
 mainloop()
