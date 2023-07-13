@@ -1,11 +1,11 @@
 # chat-app
 
-The client-server application uses socket programming to communicate with eachother over TCP stream. The program uses Python's Tkinter library for a simple GUI. The broadcast of messages is done without a delay.
-Connected clients are stored in dictionary data structure to be able to effectively broadcast messages.
-Client can shutdown by clicking on Quit button, which also closes the chat window. Similarly, server is able to gracefully shutdown when there are no connected clients.
+The client-server application uses socket programming to communicate with each other over a TCP stream. The program uses Python's Tkinter library for a simple GUI. The broadcast of messages is done without a delay.
+Connected clients are stored in the dictionary data structure to be able to broadcast messages effectively.
+Client can shut down by clicking on the Quit button, which also closes the chat window. Similarly, a server is able to gracefully shut down when there are no connected clients.
 
 1. One server and multiple clients connected
-   ![image](https://github.com/bhuvneet/chat-app/assets/78770635/74768467-2380-4cfb-82be-9d4cc40d7160)
+   ![image](https://github.com/bhuvneet/chat-app/assets/78770635/0dc21c4f-c5eb-4598-95bd-b1cf1abc901e)
 
 2. Enter name to continue to chatroom
    ![image](https://github.com/bhuvneet/chat-app/assets/78770635/606041d4-236e-4959-b821-ffff30d6a8a2)
